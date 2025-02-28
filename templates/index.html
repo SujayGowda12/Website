@@ -11,7 +11,6 @@
     />
 
     <!-- Link to Your Custom CSS (Required) -->
-    <!-- Flask's 'url_for' function ensures the correct path to styles.css in the 'static' folder -->
     <link
         rel="stylesheet"
         href="{{ url_for('static', filename='styles.css') }}"
@@ -21,13 +20,17 @@
 <div class="container">
     <h1 class="mb-4 text-center">Risk Assessment</h1>
 
+    <!-- Display Risk Score, Level, and Description -->
     {% if risk_score %}
-        <div class="alert alert-info">
-            <strong>Your Risk Score is: {{ risk_score }}</strong>
+        <div class="alert" style="background-color: {{ risk_color }}; color: white;">
+            <strong>Your Risk Score is: {{ risk_score }} ({{ risk_level }})</strong>
+            <p>{{ risk_description }}</p>
         </div>
     {% endif %}
 
-    <form method="post">
+    <!-- Risk Assessment Form -->
+    <form method="POST">
+        <!-- Likelihood Input -->
         <div class="form-group">
             <label for="likelihood">Likelihood (1-5):</label>
             <input
@@ -39,7 +42,10 @@
                 required
                 class="form-control"
             >
+            <div class="invalid-feedback">Please enter a value between 1 and 5.</div>
         </div>
+
+        <!-- Impact Input -->
         <div class="form-group">
             <label for="impact">Impact (1-5):</label>
             <input
@@ -51,16 +57,89 @@
                 required
                 class="form-control"
             >
+            <div class="invalid-feedback">Please enter a value between 1 and 5.</div>
         </div>
+
+        <!-- Severity Input -->
+        <div class="form-group">
+            <label for="severity">Severity (1-5):</label>
+            <input
+                type="number"
+                id="severity"
+                name="severity"
+                min="1"
+                max="5"
+                required
+                class="form-control"
+            >
+            <div class="invalid-feedback">Please enter a value between 1 and 5.</div>
+        </div>
+
+        <!-- Frequency Input -->
+        <div class="form-group">
+            <label for="frequency">Frequency (1-5):</label>
+            <input
+                type="number"
+                id="frequency"
+                name="frequency"
+                min="1"
+                max="5"
+                required
+                class="form-control"
+            >
+            <div class="invalid-feedback">Please enter a value between 1 and 5.</div>
+        </div>
+
+        <!-- Submit Button -->
         <button type="submit" class="btn btn-primary btn-block">
             Calculate Risk
+        </button>
+
+        <!-- Reset Button -->
+        <button type="reset" class="btn btn-secondary btn-block">
+            Reset Form
         </button>
     </form>
 </div>
 
-<!-- Bootstrap JS, Popper.js, and jQuery (Optional if you want Bootstrap's interactive components) -->
+<!-- Bootstrap JS, Popper.js, and jQuery (Optional) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Real-Time Validation Script -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const inputs = form.querySelectorAll('input[type="number"]');
+
+        inputs.forEach(input => {
+            input.addEventListener('input', function () {
+                const value = parseInt(this.value);
+                if (value < 1 || value > 5) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+
+        form.addEventListener('submit', function (event) {
+            let isValid = true;
+            inputs.forEach(input => {
+                const value = parseInt(input.value);
+                if (value < 1 || value > 5) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                event.preventDefault();
+                alert('Please enter valid integers between 1 and 5.');
+            }
+        });
+    });
+</script>
 </body>
 </html>
