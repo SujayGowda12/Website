@@ -1,0 +1,72 @@
+/* static/styles.css */
+
+/* Reset default margin and padding for a clean slate */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+/* Center the container and give it a white background */
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 40px auto;
+    max-width: 600px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for the main heading */
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Spacing for alerts (like your risk score display) */
+.alert {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Form styling */
+form {
+    margin-top: 20px;
+}
+
+/* Form group spacing */
+.form-group {
+    margin-bottom: 15px;
+}
+
+/* Styling for input fields */
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+/* Button styling */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
