@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Risk Chart{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4 text-center">Risk Scores Chart</h1>
+    <canvas id="riskChart" width="400" height="200"></canvas>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Include Chart.js via CDN if not already loaded in base.html -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Convert Python lists to JavaScript arrays using Jinja2's tojson filter
+    const riskScores = {{ risk_scores|tojson }};
+    const riskLabels = {{ risk_labels|tojson }};
+
+    const ctx = document.getElementById('riskChart').getContext('2d');
+    const riskChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: riskLabels,
+            datasets: [{
+                label: 'Risk Score',
+                data: riskScores,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
