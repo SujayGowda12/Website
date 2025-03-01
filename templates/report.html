@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Risk Report</title>
+  <style>
+    /* Simple styling for your PDF report */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #aaa;
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Risk Assessment Report</h1>
+  <p>Generated on {{ current_date }}</p>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Likelihood</th>
+        <th>Impact</th>
+        <th>Severity</th>
+        <th>Frequency</th>
+        <th>Risk Score</th>
+        <th>Risk Level</th>
+        <th>File Path</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in risks %}
+      <tr>
+        <td>{{ entry.id }}</td>
+        <td>{{ entry.likelihood }}</td>
+        <td>{{ entry.impact }}</td>
+        <td>{{ entry.severity }}</td>
+        <td>{{ entry.frequency }}</td>
+        <td>{{ entry.risk_score }}</td>
+        <td>{{ entry.risk_level }}</td>
+        <td>{{ entry.file_path }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>

@@ -5,37 +5,119 @@
 {% block content %}
 <div class="container">
     <h1 class="mb-4 text-center">Risk Scores Chart</h1>
-    <canvas id="riskChart" width="400" height="200"></canvas>
+    
+    <!-- Filter Form -->
+    <form method="get" action="{{ url_for('chart') }}" class="form-inline mb-4">
+        <div class="form-group mr-3">
+            <label for="risk_level" class="mr-2">Risk Level:</label>
+            <select name="risk_level" id="risk_level" class="form-control">
+                <option value="All" {% if selected_risk_level == 'All' or not selected_risk_level %}selected{% endif %}>All</option>
+                <option value="Low" {% if selected_risk_level == 'Low' %}selected{% endif %}>Low</option>
+                <option value="Medium" {% if selected_risk_level == 'Medium' %}selected{% endif %}>Medium</option>
+                <option value="High" {% if selected_risk_level == 'High' %}selected{% endif %}>High</option>
+            </select>
+        </div>
+        <div class="form-group mr-3">
+            <label for="date_filter" class="mr-2">Date Filter:</label>
+            <select name="date_filter" id="date_filter" class="form-control">
+                <option value="" {% if not selected_date_filter %}selected{% endif %}>No Filter</option>
+                <option value="last_30" {% if selected_date_filter == 'last_30' %}selected{% endif %}>Last 30 Days</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+    </form>
+    
+    <!-- Bar Chart -->
+    <div class="chart-container">
+        <canvas id="riskChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Pie/Donut Chart -->
+    <div class="chart-container">
+        <canvas id="riskPieChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Display Filtered Results -->
+    <div class="table-responsive">
+        <table class="table table-bordered mt-4">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Likelihood</th>
+                    <th>Impact</th>
+                    <th>Severity</th>
+                    <th>Frequency</th>
+                    <th>Risk Score</th>
+                    <th>Risk Level</th>
+                    <th>File</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for risk in filtered_risks %}
+                <tr>
+                    <td>{{ risk.id }}</td>
+                    <td>{{ risk.likelihood }}</td>
+                    <td>{{ risk.impact }}</td>
+                    <td>{{ risk.severity }}</td>
+                    <td>{{ risk.frequency }}</td>
+                    <td>{{ risk.risk_score }}</td>
+                    <td>{{ risk.risk_level }}</td>
+                    <td>
+                        {% if risk.file_path %}
+                            <a href="{{ url_for('static', filename=risk.file_path) }}" target="_blank">View File</a>
+                        {% else %}
+                            No file
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<!-- Include Chart.js via CDN if not already loaded in base.html -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Convert Python lists to JavaScript arrays using Jinja2's tojson filter
-    const riskScores = {{ risk_scores|tojson }};
-    const riskLabels = {{ risk_labels|tojson }};
-
-    const ctx = document.getElementById('riskChart').getContext('2d');
-    const riskChart = new Chart(ctx, {
+    // Bar Chart
+    const barCtx = document.getElementById('riskChart').getContext('2d');
+    const barChart = new Chart(barCtx, {
         type: 'bar',
         data: {
-            labels: riskLabels,
+            labels: ['Low', 'Medium', 'High'], // Example labels
             datasets: [{
-                label: 'Risk Score',
-                data: riskScores,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                label: 'Risk Scores',
+                data: [10, 20, 30], // Example data
+                backgroundColor: ['#36a2eb', '#ffce56', '#ff6384'],
                 borderWidth: 1
             }]
         },
         options: {
+            responsive: true,
             scales: {
                 y: {
                     beginAtZero: true
                 }
             }
+        }
+    });
+
+    // Pie/Donut Chart
+    const pieCtx = document.getElementById('riskPieChart').getContext('2d');
+    const pieChart = new Chart(pieCtx, {
+        type: 'pie', // or 'doughnut'
+        data: {
+            labels: ['Low', 'Medium', 'High'], // Example labels
+            datasets: [{
+                label: 'Risk Distribution',
+                data: [10, 20, 30], // Example data
+                backgroundColor: ['#36a2eb', '#ffce56', '#ff6384'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
         }
     });
 </script>

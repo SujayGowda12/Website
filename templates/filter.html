@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Filter Risks{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4 text-center">Filter Risks</h1>
+
+    <!-- Filter Form -->
+    <form method="POST" class="form-inline mb-3">
+        <!-- Risk Level Dropdown -->
+        <div class="form-group mr-3">
+            <label for="risk_level" class="mr-2">Risk Level:</label>
+            <select name="risk_level" id="risk_level" class="form-control">
+                <option value="All" {% if selected_risk_level == "All" or not selected_risk_level %}selected{% endif %}>All</option>
+                <option value="Low" {% if selected_risk_level == "Low" %}selected{% endif %}>Low</option>
+                <option value="Medium" {% if selected_risk_level == "Medium" %}selected{% endif %}>Medium</option>
+                <option value="High" {% if selected_risk_level == "High" %}selected{% endif %}>High</option>
+            </select>
+        </div>
+
+        <!-- Date Filter Dropdown -->
+        <div class="form-group mr-3">
+            <label for="date_filter" class="mr-2">Date Filter:</label>
+            <select name="date_filter" id="date_filter" class="form-control">
+                <option value="" {% if not selected_date_filter %}selected{% endif %}>No Filter</option>
+                <option value="last_30" {% if selected_date_filter == "last_30" %}selected{% endif %}>Last 30 Days</option>
+            </select>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary">Apply Filters</button>
+    </form>
+
+    <!-- Display Filtered Results -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Likelihood</th>
+                <th>Impact</th>
+                <th>Severity</th>
+                <th>Frequency</th>
+                <th>Risk Score</th>
+                <th>Risk Level</th>
+                <th>Date Submitted</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for risk in filtered_risks %}
+            <tr>
+                <td>{{ risk.id }}</td>
+                <td>{{ risk.likelihood }}</td>
+                <td>{{ risk.impact }}</td>
+                <td>{{ risk.severity }}</td>
+                <td>{{ risk.frequency }}</td>
+                <td>{{ risk.risk_score }}</td>
+                <td>{{ risk.risk_level }}</td>
+                <td>{{ risk.date_submitted.strftime("%Y-%m-%d %H:%M:%S") if risk.date_submitted else '' }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

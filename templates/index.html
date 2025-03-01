@@ -15,7 +15,7 @@
     {% endif %}
 
     <!-- Risk Assessment Form -->
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         <!-- Likelihood Input -->
         <div class="form-group">
             <label for="likelihood">Likelihood (1-5):</label>
@@ -44,44 +44,27 @@
             <div class="invalid-feedback">Please enter a value between 1 and 5.</div>
         </div>
 
+        <!-- Detailed Description -->
+        <div class="form-group">
+            <label for="description">Detailed Description:</label>
+            <textarea id="description" name="description" class="form-control" rows="4"></textarea>
+        </div>
+
+        <!-- File Upload -->
+        <div class="form-group">
+            <label for="file">Attach File (optional):</label>
+            <input type="file" id="file" name="file" class="form-control-file">
+        </div>
+
         <!-- Submit and Reset Buttons -->
         <button type="submit" class="btn btn-primary btn-block">Calculate Risk</button>
         <button type="reset" class="btn btn-secondary btn-block">Reset Form</button>
     </form>
+
+    <!-- Buttons for CSV and PDF -->
+    <div class="mt-3 d-flex justify-content-between">
+        <a href="{{ url_for('export_csv') }}" class="btn btn-success" role="button">Download CSV Report</a>
+        <a href="{{ url_for('download_report') }}" class="btn btn-info" role="button">Download PDF Report</a>
+    </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('form');
-        const inputs = form.querySelectorAll('input[type="number"]');
-
-        inputs.forEach(input => {
-            input.addEventListener('input', function () {
-                const value = parseInt(this.value);
-                if (value < 1 || value > 5) {
-                    this.classList.add('is-invalid');
-                } else {
-                    this.classList.remove('is-invalid');
-                }
-            });
-        });
-
-        form.addEventListener('submit', function (event) {
-            let isValid = true;
-            inputs.forEach(input => {
-                const value = parseInt(input.value);
-                if (value < 1 || value > 5) {
-                    input.classList.add('is-invalid');
-                    isValid = false;
-                }
-            });
-            if (!isValid) {
-                event.preventDefault();
-                alert('Please enter valid integers between 1 and 5.');
-            }
-        });
-    });
-</script>
 {% endblock %}
