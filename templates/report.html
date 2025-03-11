@@ -4,30 +4,77 @@
   <meta charset="UTF-8">
   <title>Risk Report</title>
   <style>
-    /* Simple styling for your PDF report */
+    /* Use landscape orientation and smaller margins to fit more columns */
+    @page {
+      size: A4 landscape;
+      margin: 10mm;
+    }
+
+    /* Slightly smaller default font size */
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
+      font-size: 11px;
     }
     h1 {
       text-align: center;
+      font-size: 20px;
+      margin-bottom: 10px;
     }
+    p {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 20px;
+      table-layout: fixed; /* Ensures columns adhere to specified widths */
     }
+
+    /* Define column widths via colgroup to control layout */
+    colgroup col:nth-child(1) { width: 30px; }   /* ID */
+    colgroup col:nth-child(2) { width: 40px; }   /* Likelihood */
+    colgroup col:nth-child(3) { width: 40px; }   /* Impact */
+    colgroup col:nth-child(4) { width: 40px; }   /* Severity */
+    colgroup col:nth-child(5) { width: 40px; }   /* Frequency */
+    colgroup col:nth-child(6) { width: 50px; }   /* Risk Score */
+    colgroup col:nth-child(7) { width: 60px; }   /* Risk Level */
+    colgroup col:nth-child(8) { width: 160px; }  /* Mitigation Strategies */
+    colgroup col:nth-child(9) { width: 100px; }  /* Risk Description */
+    colgroup col:nth-child(10){ width: 100px; }  /* Date Submitted */
+
     th, td {
       border: 1px solid #aaa;
-      padding: 8px;
+      padding: 6px;
       text-align: center;
+      font-size: 11px;
+      word-wrap: break-word; /* Allows text to wrap within the cell */
+    }
+
+    th {
+      background-color: #f2f2f2;
     }
   </style>
 </head>
 <body>
   <h1>Risk Assessment Report</h1>
   <p>Generated on {{ current_date }}</p>
+
   <table>
+    <colgroup>
+      <col>
+      <col>
+      <col>
+      <col>
+      <col>
+      <col>
+      <col>
+      <col>
+      <col>
+      <col>
+    </colgroup>
     <thead>
       <tr>
         <th>ID</th>
@@ -37,7 +84,9 @@
         <th>Frequency</th>
         <th>Risk Score</th>
         <th>Risk Level</th>
-        <th>File Path</th>
+        <th>Mitigation Strategies</th>
+        <th>Risk Description</th>
+        <th>Date Submitted</th>
       </tr>
     </thead>
     <tbody>
@@ -48,9 +97,12 @@
         <td>{{ entry.impact }}</td>
         <td>{{ entry.severity }}</td>
         <td>{{ entry.frequency }}</td>
-        <td>{{ entry.risk_score }}</td>
+        <!-- Round the risk score to one decimal place -->
+        <td>{{ "%.1f"|format(entry.risk_score) }}</td>
         <td>{{ entry.risk_level }}</td>
-        <td>{{ entry.file_path }}</td>
+        <td>{{ get_mitigation_strategies(entry.risk_level) }}</td>
+        <td>{{ entry.risk_description }}</td>
+        <td>{{ entry.date_submitted.strftime("%Y-%m-%d %H:%M:%S") if entry.date_submitted else '' }}</td>
       </tr>
       {% endfor %}
     </tbody>

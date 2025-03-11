@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Mitigation Strategies{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4 text-center">Mitigation Strategies for {{ risk_level }} Risk</h1>
+    <div class="alert alert-info">
+        <p>{{ strategies }}</p>
+    </div>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Back to Home</a>
+</div>
+{% endblock %}
