@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, make_response, Response
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 from weasyprint import HTML
 from io import StringIO
 import csv
@@ -13,14 +13,11 @@ app.secret_key = 'your_secret_key_here'  # Replace with a secure random key
 # Database configuration
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///risk.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 db = SQLAlchemy(app)
 
 # Initialize Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
-# If a user tries to access a protected route without being logged in,
-# they will be redirected to this endpoint:
 login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 
@@ -38,7 +35,6 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-# Flask-Login requires a user_loader function:
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -90,16 +86,17 @@ def calculate_risk_level(risk_score):
 
 def get_mitigation_strategies(risk_level):
     if risk_level == "High":
-        return ("Mitigation Strategies for High Risk: Immediately review access controls, update firmware/software, isolate vulnerable devices, and increase monitoring.")
+        return ("Mitigation Strategies for High Risk: Immediately review access controls, update firmware/software, "
+                "isolate vulnerable devices, and increase monitoring.")
     elif risk_level == "Medium":
-        return ("Mitigation Strategies for Medium Risk: Schedule regular security audits, apply necessary patches, and improve monitoring and alerting systems.")
+        return ("Mitigation Strategies for Medium Risk: Schedule regular security audits, apply necessary patches, "
+                "and improve monitoring and alerting systems.")
     else:
         return "Mitigation Strategies for Low Risk: Maintain routine security checks and monitoring."
 
 # ---------------------------
 # Routes
 # ---------------------------
-
 @app.route('/', methods=['GET', 'POST'])
 def index():
     risk_score = None
@@ -152,12 +149,32 @@ def mitigation():
     strategies = get_mitigation_strategies(risk_level)
     return render_template('mitigation.html', risk_level=risk_level, strategies=strategies)
 
-# Protected route example
-@app.route('/chart')
+@app.route('/chart', methods=['GET'])
 @login_required
 def chart():
-    # ... chart logic ...
-    return render_template('chart.html')
+    risk_level_filter = request.args.get('risk_level', 'All')
+    date_filter = request.args.get('date_filter', '')
+
+    query = Risk.query
+    if risk_level_filter and risk_level_filter != 'All':
+        query = query.filter_by(risk_level=risk_level_filter)
+    if date_filter == 'last_30':
+        threshold = datetime.now() - timedelta(days=30)
+        query = query.filter(Risk.date_submitted >= threshold)
+
+    filtered_risks = query.all()
+
+    # Ensure risk_scores and risk_labels are always defined (default to empty list if no data)
+    risk_scores = [r.risk_score for r in filtered_risks] if filtered_risks else []
+    risk_labels = [f"Entry {i+1}" for i in range(len(filtered_risks))] if filtered_risks else []
+
+    return render_template(
+        'chart.html',
+        risk_scores=risk_scores,
+        risk_labels=risk_labels,
+        selected_risk_level=risk_level_filter,
+        selected_date_filter=date_filter
+    )
 
 @app.route('/export_csv')
 @login_required
@@ -202,7 +219,6 @@ def download_report():
 # ---------------------------
 # Authentication Routes
 # ---------------------------
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -222,18 +238,16 @@ def login():
 def logout():
     logout_user()
     flash("You have been logged out. Please log in again.", "info")
-    return redirect(url_for('login'))  # <--- Redirects to login page after logout
+    return redirect(url_for('login'))
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-
         if User.query.filter_by(username=username).first():
             flash("Username already taken.", "danger")
             return redirect(url_for('register'))
-
         new_user = User(username=username)
         new_user.set_password(password)
         db.session.add(new_user)
