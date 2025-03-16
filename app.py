@@ -164,14 +164,16 @@ def chart():
 
     filtered_risks = query.all()
 
-    # Ensure risk_scores and risk_labels are always defined (default to empty list if no data)
+    # Prepare arrays for the charts: scores, labels, and colors.
     risk_scores = [r.risk_score for r in filtered_risks] if filtered_risks else []
     risk_labels = [f"Entry {i+1}" for i in range(len(filtered_risks))] if filtered_risks else []
+    risk_colors = [r.risk_color for r in filtered_risks] if filtered_risks else []
 
     return render_template(
         'chart.html',
         risk_scores=risk_scores,
         risk_labels=risk_labels,
+        risk_colors=risk_colors,
         selected_risk_level=risk_level_filter,
         selected_date_filter=date_filter
     )

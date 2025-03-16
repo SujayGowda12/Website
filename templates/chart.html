@@ -30,10 +30,24 @@
     <!-- Bar Chart -->
     <h2 class="mb-4 text-center">Bar Chart</h2>
     <canvas id="barChart" width="400" height="400"></canvas>
+    <!-- Custom Legend for Bar Chart -->
+    <div class="text-center mb-4">
+        <strong>Risk Level:</strong>
+        <span style="display:inline-block; width:20px; height:20px; background-color:red; margin-left:10px;"></span> High
+        <span style="display:inline-block; width:20px; height:20px; background-color:yellow; margin-left:10px;"></span> Medium
+        <span style="display:inline-block; width:20px; height:20px; background-color:green; margin-left:10px;"></span> Low
+    </div>
 
     <!-- Pie Chart -->
     <h2 class="mb-4 text-center">Pie Chart</h2>
     <canvas id="pieChart" width="400" height="400"></canvas>
+    <!-- Custom Legend for Pie Chart -->
+    <div class="text-center">
+        <strong>Risk Level:</strong>
+        <span style="display:inline-block; width:20px; height:20px; background-color:red; margin-left:10px;"></span> High
+        <span style="display:inline-block; width:20px; height:20px; background-color:yellow; margin-left:10px;"></span> Medium
+        <span style="display:inline-block; width:20px; height:20px; background-color:green; margin-left:10px;"></span> Low
+    </div>
 </div>
 {% endblock %}
 
@@ -44,24 +58,28 @@
     // Convert Python lists to JavaScript arrays using Jinja2's tojson filter
     const riskScores = {{ risk_scores|tojson }};
     const riskLabels = {{ risk_labels|tojson }};
+    const riskColors = {{ risk_colors|tojson }};
 
-    // ------------------
-    // Bar Chart Setup
-    // ------------------
+    // Bar Chart
     const barCtx = document.getElementById('barChart').getContext('2d');
     new Chart(barCtx, {
         type: 'bar',
         data: {
             labels: riskLabels,
             datasets: [{
-                label: 'Risk Score',
+                label: '',  // Hiding default legend
                 data: riskScores,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: riskColors,
+                borderColor: riskColors,
                 borderWidth: 1
             }]
         },
         options: {
+            plugins: {
+                legend: {
+                    display: false  // Disable default legend
+                }
+            },
             scales: {
                 y: {
                     beginAtZero: true
@@ -70,40 +88,26 @@
         }
     });
 
-    // ------------------
-    // Pie Chart Setup
-    // ------------------
-    // Define an array of background colors for the pie segments.
-    const backgroundColors = [
-        'rgba(255, 99, 132, 0.6)',
-        'rgba(54, 162, 235, 0.6)',
-        'rgba(255, 206, 86, 0.6)',
-        'rgba(75, 192, 192, 0.6)',
-        'rgba(153, 102, 255, 0.6)',
-        'rgba(255, 159, 64, 0.6)'
-    ];
-    const borderColors = [
-        'rgba(255, 99, 132, 1)',
-        'rgba(54, 162, 235, 1)',
-        'rgba(255, 206, 86, 1)',
-        'rgba(75, 192, 192, 1)',
-        'rgba(153, 102, 255, 1)',
-        'rgba(255, 159, 64, 1)'
-    ];
-
+    // Pie Chart
     const pieCtx = document.getElementById('pieChart').getContext('2d');
     new Chart(pieCtx, {
         type: 'pie',
         data: {
             labels: riskLabels,
             datasets: [{
+                label: '',  // Hiding default legend
                 data: riskScores,
-                backgroundColor: backgroundColors.slice(0, riskScores.length),
-                borderColor: borderColors.slice(0, riskScores.length),
+                backgroundColor: riskColors,
+                borderColor: riskColors,
                 borderWidth: 1
             }]
         },
         options: {
+            plugins: {
+                legend: {
+                    display: false  // Disable default legend
+                }
+            },
             responsive: true
         }
     });
