@@ -114,15 +114,18 @@ def index():
             if not all(1 <= v <= 5 for v in [likelihood, impact, severity, frequency]):
                 risk_score = "Invalid input. Please enter integers between 1 and 5."
             else:
-                risk_score = calculate_risk_score(likelihood, impact, severity, frequency)
-                risk_level, risk_color, risk_description = calculate_risk_level(risk_score)
+                # Calculate risk score
+                risk_value = calculate_risk_score(likelihood, impact, severity, frequency)
+                # Format the score to 1 decimal place for display
+                risk_score = format(risk_value, '.1f')
+                risk_level, risk_color, risk_description = calculate_risk_level(risk_value)
 
                 new_risk = Risk(
                     likelihood=likelihood,
                     impact=impact,
                     severity=severity,
                     frequency=frequency,
-                    risk_score=risk_score,
+                    risk_score=risk_value,  # Store the actual numeric value in the DB
                     risk_level=risk_level,
                     risk_color=risk_color,
                     risk_description=risk_description
@@ -130,8 +133,8 @@ def index():
                 db.session.add(new_risk)
                 db.session.commit()
 
-                # Redirect to mitigation page (for any risk level)
-                return redirect(url_for('mitigation', risk_level=risk_level))
+                # Redirect to mitigation page with both risk_level and formatted risk_score
+                return redirect(url_for('mitigation', risk_level=risk_level, risk_score=risk_score))
         except ValueError:
             risk_score = "Invalid input. Please enter valid integers."
 
@@ -146,8 +149,9 @@ def index():
 @app.route('/mitigation')
 def mitigation():
     risk_level = request.args.get('risk_level', 'High')
+    risk_score = request.args.get('risk_score', None)
     strategies = get_mitigation_strategies(risk_level)
-    return render_template('mitigation.html', risk_level=risk_level, strategies=strategies)
+    return render_template('mitigation.html', risk_level=risk_level, strategies=strategies, risk_score=risk_score)
 
 @app.route('/chart', methods=['GET'])
 @login_required
