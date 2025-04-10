@@ -37,17 +37,6 @@
         <span style="display:inline-block; width:20px; height:20px; background-color:yellow; margin-left:10px;"></span> Medium
         <span style="display:inline-block; width:20px; height:20px; background-color:green; margin-left:10px;"></span> Low
     </div>
-
-    <!-- Pie Chart -->
-    <h2 class="mb-4 text-center">Pie Chart</h2>
-    <canvas id="pieChart" width="400" height="400"></canvas>
-    <!-- Custom Legend for Pie Chart -->
-    <div class="text-center">
-        <strong>Risk Level:</strong>
-        <span style="display:inline-block; width:20px; height:20px; background-color:red; margin-left:10px;"></span> High
-        <span style="display:inline-block; width:20px; height:20px; background-color:yellow; margin-left:10px;"></span> Medium
-        <span style="display:inline-block; width:20px; height:20px; background-color:green; margin-left:10px;"></span> Low
-    </div>
 </div>
 {% endblock %}
 
@@ -85,30 +74,6 @@
                     beginAtZero: true
                 }
             }
-        }
-    });
-
-    // Pie Chart
-    const pieCtx = document.getElementById('pieChart').getContext('2d');
-    new Chart(pieCtx, {
-        type: 'pie',
-        data: {
-            labels: riskLabels,
-            datasets: [{
-                label: '',  // Hiding default legend
-                data: riskScores,
-                backgroundColor: riskColors,
-                borderColor: riskColors,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            plugins: {
-                legend: {
-                    display: false  // Disable default legend
-                }
-            },
-            responsive: true
         }
     });
 </script>
