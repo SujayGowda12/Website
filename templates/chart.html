@@ -30,12 +30,13 @@
     <!-- Bar Chart -->
     <h2 class="mb-4 text-center">Bar Chart</h2>
     <canvas id="barChart" width="400" height="400"></canvas>
-    <!-- Custom Legend for Bar Chart -->
+    
+    <!-- Custom Legend for Bar Chart with Black Borders -->
     <div class="text-center mb-4">
         <strong>Risk Level:</strong>
-        <span style="display:inline-block; width:20px; height:20px; background-color:red; margin-left:10px;"></span> High
-        <span style="display:inline-block; width:20px; height:20px; background-color:yellow; margin-left:10px;"></span> Medium
-        <span style="display:inline-block; width:20px; height:20px; background-color:green; margin-left:10px;"></span> Low
+        <span style="display:inline-block; width:20px; height:20px; background-color:red; margin-left:10px; border:2px solid black;"></span> High
+        <span style="display:inline-block; width:20px; height:20px; background-color:yellow; margin-left:10px; border:2px solid black;"></span> Medium
+        <span style="display:inline-block; width:20px; height:20px; background-color:green; margin-left:10px; border:2px solid black;"></span> Low
     </div>
 </div>
 {% endblock %}
@@ -56,22 +57,32 @@
         data: {
             labels: riskLabels,
             datasets: [{
-                label: '',  // Hiding default legend
+                label: '',                   // Hiding default legend
                 data: riskScores,
                 backgroundColor: riskColors,
-                borderColor: riskColors,
-                borderWidth: 1
+                borderColor: 'black',        // Black borders around bars
+                borderWidth: 1               // Thicker border width
             }]
         },
         options: {
             plugins: {
                 legend: {
-                    display: false  // Disable default legend
+                    display: false          // Disable default legend
                 }
             },
             scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Submission ID'
+                    }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Risk Score'
+                    }
                 }
             }
         }

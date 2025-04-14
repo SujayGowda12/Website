@@ -170,7 +170,8 @@ def chart():
 
     # Prepare arrays for the charts: scores, labels, and colors.
     risk_scores = [r.risk_score for r in filtered_risks] if filtered_risks else []
-    risk_labels = [f"Entry {i+1}" for i in range(len(filtered_risks))] if filtered_risks else []
+    # Use submission IDs as labels.
+    risk_labels = [str(r.id) for r in filtered_risks] if filtered_risks else []
     risk_colors = [r.risk_color for r in filtered_risks] if filtered_risks else []
 
     return render_template(
