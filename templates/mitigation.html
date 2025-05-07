@@ -5,6 +5,9 @@
 {% block content %}
 <div class="container">
     <h1 class="mb-4 text-center">Mitigation Strategies for {{ risk_level }} Risk</h1>
+    {% if risk_score %}
+      <h4 class="text-center">Your Calculated Risk Score: {{ risk_score }}</h4>
+    {% endif %}
     <div class="alert alert-info">
         <p>{{ strategies }}</p>
     </div>
